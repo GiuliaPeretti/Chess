@@ -23,23 +23,31 @@ def gen_board():
         board.append(t)
 
     board[0]=[Rook(0,0,0), Knight(0,1,0), Bishop(0,2,0), Queen(0,3,0), King(0,4,0), Bishop(0,5,0), Knight(0,6,0), Rook(0,7,0)]
+    board[1]=[Pawn(1,0,0), Pawn(1,1,0), Pawn(1,2,0), Pawn(1,3,0), Pawn(1,4,0), Pawn(1,5,0), Pawn(1,6,0), Pawn(1,7,0)]
+    board[6]=[Pawn(6,0,1), Pawn(6,1,1), Pawn(6,2,1), Pawn(6,3,1), Pawn(6,4,1), Pawn(6,5,1), Pawn(6,6,1), Pawn(6,7,1)]
+    board[7]=[Rook(7,0,1), Knight(7,1,1), Bishop(7,2,1), Queen(7,3,1), King(7,4,1), Bishop(7,5,1), Knight(7,6,1), Rook(7,7,1)]
+
     return(board)
 
 def handle_mouse_input(x,y):
     global selected
-    draw_chessboard()
-    draw_board()
     row=(y-SCREEN_BORDER)//CELL_SIZE
     col=(x-SCREEN_BORDER)//CELL_SIZE
     if selected is None:
+        draw_chessboard()
+        draw_board()
         if board[row][col] is not None:
             valids=board[row][col].valid_moves(board)
             board[row][col].draw_valid(screen,valids)
-        selected=[row,col]
+        selected=(row,col)
+        draw_board()
     else:
-        print('entra else')
-        board[selected[0]][selected[1]].move(row,col,screen)
+        valids=board[selected[0]][selected[1]].valid_moves(board)
+        if (row,col) in valids:
+            move(row, col, selected)
         selected=None
+        draw_chessboard()
+        draw_board()
 
 
 def draw_board():
@@ -48,7 +56,10 @@ def draw_board():
             if cell is not None:
                 cell.draw(screen)
 
-
+def move(row, col, selected):
+    board[selected[0]][selected[1]].move(row,col,screen)
+    board[row][col]=board[selected[0]][selected[1]]
+    board[selected[0]][selected[1]]=None
 
 
 if __name__=='__main__':

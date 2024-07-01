@@ -3,9 +3,10 @@ from settings import *
 
 
 class Piece:
-    def __init__(self, row, col):
+    def __init__(self, row, col, color):
         self.row=row
         self.col=col
+        self.color=color
 
     def draw(self, win, path):
         img = pygame.image.load(path)
@@ -31,26 +32,39 @@ class Piece:
         print('move in piece')
 
         self.set_pos(row, col)
-        self.draw(win, path)
+        self.draw(win)
+    
+    def get_color(self):
+        return(self.color)
 
 class Pawn(Piece):
     def __init__(self, row, col, color):
-        super().__init__(row, col)
-        self.color=color
+        super().__init__(row, col, color)
+        self.first_move=False
     
     def valid_moves(self, board):
         valids=[]
         if self.color==0:
-            if(self.row+1<=8 and board[self.row+1][self.col] is None):
+            if(self.row+1<8 and board[self.row+1][self.col] is None):
                 valids.append((self.row+1,self.col))
-            if(self.row+2<=8 and board[self.row+2][self.col] is None):
-                valids.append((self.row+2,self.col))   
+            if(self.row+2<8 and board[self.row+2][self.col] is None and not(self.first_move)):
+                valids.append((self.row+2,self.col))  
+            if(self.row+1<8 and self.col-1>=0 and board[self.row+1][self.col-1] is not None and board[self.row+1][self.col-1].get_color()==1):
+                valids.append((self.row+1,self.col-1))
+            if(self.row+1<8 and self.col+8<8 and board[self.row+1][self.col+1] is not None and board[self.row+1][self.col+1].get_color()==1):
+                valids.append((self.row+1,self.col+1)) 
         #TODO: add en passant
         else:
-            if(self.row-1<=8 and board[self.row-1][self.col] is None):
+            if(self.row-1>=0 and board[self.row-1][self.col] is None):
                 valids.append((self.row-1,self.col))
-            if(self.row-2<=8 and board[self.row-2][self.col] is None):
+            if(self.row-2>=0 and board[self.row-2][self.col] is None and not(self.first_move)):
                 valids.append((self.row-2,self.col)) 
+            if(self.row+1>=0 and self.col-1>=0 and board[self.row-1][self.col-1] is not None and board[self.row-1][self.col-1].get_color()==0):
+                valids.append((self.row-1,self.col-1))
+            if(self.row+1>=0 and self.col+1<8 and board[self.row-1][self.col+1] is not None and board[self.row-1][self.col+1].get_color()==0):
+                valids.append((self.row-1,self.col+1)) 
+
+
         return(valids)
 
 
@@ -65,12 +79,13 @@ class Pawn(Piece):
         return path
 
     def move(self, row, col, win):
+        self.first_move=True
         super().move(row, col, win, self.get_path())
+
 
 class Rook(Piece):
     def __init__(self, row, col, color):
-        super().__init__(row,col)
-        self.color=color
+        super().__init__(row,col,color)
     
     def valid_moves(self, board):
         valid_moves=[]
@@ -125,12 +140,10 @@ class Rook(Piece):
         print('move in rook')
         super().move(row, col, win, self.get_path())
 
- 
 
 class Bishop(Piece):
     def __init__(self, row, col, color):
-        super().__init__(row, col)
-        self.color=color
+        super().__init__(row, col, color)
     
     def valid_moves(self, board):
         valid_moves=[]
@@ -156,7 +169,7 @@ class Bishop(Piece):
         free=True
         c=1
         while(free):
-            if self.row+c<0 or self.col-c<0 or board[self.row+c][self.col-c] is not None:
+            if self.row+c>=8 or self.col-c<0 or board[self.row+c][self.col-c] is not None:
                 free=False
             else:
                 valid_moves.append((self.row+c, self.col-c))
@@ -165,7 +178,7 @@ class Bishop(Piece):
         free=True
         c=1
         while(free):
-            if self.row-c<0 or self.col+c<0 or board[self.row-c][self.col+c] is not None:
+            if self.row-c<0 or self.col+c>=8 or board[self.row-c][self.col+c] is not None:
                 free=False
             else:
                 valid_moves.append((self.row-c, self.col+c))
@@ -189,8 +202,7 @@ class Bishop(Piece):
 
 class Knight(Piece):
     def __init__(self, row, col, color):
-        super().__init__(row, col)
-        self.color=color
+        super().__init__(row, col, color)
     
     def valid_moves(self, board):
         valid_moves=[]
@@ -221,8 +233,7 @@ class Knight(Piece):
 class Queen(Piece):
 
     def __init__(self, row, col, color):
-        super().__init__(row, col)
-        self.color=color
+        super().__init__(row, col, color)
     
     def valid_moves(self, board):
         valid_moves=[]
@@ -248,7 +259,7 @@ class Queen(Piece):
         free=True
         c=1
         while(free):
-            if self.row+c<0 or self.col-c<0 or board[self.row+c][self.col-c] is not None:
+            if self.row+c>=8 or self.col-c<0 or board[self.row+c][self.col-c] is not None:
                 free=False
             else:
                 valid_moves.append((self.row+c, self.col-c))
@@ -257,7 +268,7 @@ class Queen(Piece):
         free=True
         c=1
         while(free):
-            if self.row-c<0 or self.col+c<0 or board[self.row-c][self.col+c] is not None:
+            if self.row-c<0 or self.col+c>=8 or board[self.row-c][self.col+c] is not None:
                 free=False
             else:
                 valid_moves.append((self.row-c, self.col+c))
@@ -317,7 +328,7 @@ class Queen(Piece):
 class King(Piece):
 
     def __init__(self, row, col, color):
-        super().__init__(row, col)
+        super().__init__(row, col, color)
         self.color=color
     
     def valid_moves(self, board):
