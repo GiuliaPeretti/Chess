@@ -23,6 +23,15 @@ def gen_board():
         board.append(t)
     return(board)
 
+def handle_mouse_input(x,y):
+    row=(y-SCREEN_BORDER)//CELL_SIZE
+    col=(x-SCREEN_BORDER)//CELL_SIZE
+    print(row,col)
+    if board[row][col] is not None:
+        valids=board[row][col].valid_moves(board)
+        board[row][col].draw_valid(screen,valids)
+
+
 
 
 if __name__=='__main__':
@@ -35,13 +44,23 @@ if __name__=='__main__':
 
     draw_background()
     draw_chessboard()
+    board=gen_board()
+    pawn = Pawn(0,0,0)
+    pawn.draw(screen)
+    board[0][0]=pawn
 
+    rook = Rook(4,0,0)
+    rook.draw(screen)
+    board[4][0]=rook
 
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 break
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x,y=pygame.mouse.get_pos()
+                handle_mouse_input(x,y)
         pygame.display.flip()
         clock.tick(FPS)
 
