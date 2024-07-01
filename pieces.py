@@ -7,6 +7,7 @@ class Piece:
         self.row=row
         self.col=col
         self.color=color
+        self.first_move=False
 
     def draw(self, win, path):
         img = pygame.image.load(path)
@@ -29,6 +30,7 @@ class Piece:
         self.col=col
 
     def move(self, row, col, win, path):
+        self.first_move=True
         print('move in piece')
 
         self.set_pos(row, col)
@@ -40,7 +42,6 @@ class Piece:
 class Pawn(Piece):
     def __init__(self, row, col, color):
         super().__init__(row, col, color)
-        self.first_move=False
     
     def valid_moves(self, board):
         valids=[]
@@ -52,7 +53,11 @@ class Pawn(Piece):
             if(self.row+1<8 and self.col-1>=0 and board[self.row+1][self.col-1] is not None and board[self.row+1][self.col-1].get_color()==1):
                 valids.append((self.row+1,self.col-1))
             if(self.row+1<8 and self.col+8<8 and board[self.row+1][self.col+1] is not None and board[self.row+1][self.col+1].get_color()==1):
-                valids.append((self.row+1,self.col+1)) 
+                valids.append((self.row+1,self.col+1))
+            if(self.row+1<8 and self.col+1<8 and board[self.row][self.col+1] is not None and board[self.row][self.col+1].get_color()==1):
+                valids.append((self.row+1,self.col+1))
+            if(self.row+1<8 and self.col-1>=0 and board[self.row][self.col-1] is not None and board[self.row][self.col-1].get_color()==1):
+                valids.append((self.row+1,self.col-1))
         #TODO: add en passant
         else:
             if(self.row-1>=0 and board[self.row-1][self.col] is None):
@@ -63,6 +68,10 @@ class Pawn(Piece):
                 valids.append((self.row-1,self.col-1))
             if(self.row+1>=0 and self.col+1<8 and board[self.row-1][self.col+1] is not None and board[self.row-1][self.col+1].get_color()==0):
                 valids.append((self.row-1,self.col+1)) 
+            if(self.row-1>=0 and self.col+1<8 and board[self.row][self.col+1] is not None and board[self.row][self.col+1].get_color()==0):
+                valids.append((self.row-1,self.col+1))
+            if(self.row-1>=0 and self.col-1>=0 and board[self.row][self.col-1] is not None and board[self.row][self.col-1].get_color()==0):
+                valids.append((self.row-1,self.col-1))
 
 
         return(valids)
@@ -79,7 +88,6 @@ class Pawn(Piece):
         return path
 
     def move(self, row, col, win):
-        self.first_move=True
         super().move(row, col, win, self.get_path())
 
 
@@ -92,7 +100,11 @@ class Rook(Piece):
         free=True
         c=1
         while(free):
-            if self.row+c>=8 or board[self.row+c][self.col] is not None:
+            if self.row+c>=8:
+                free=False
+            elif board[self.row+c][self.col] is not None:
+                if board[self.row+c][self.col].get_color()!=self.get_color():
+                    valid_moves.append((self.row+c, self.col))
                 free=False
             else:
                 valid_moves.append((self.row+c, self.col))
@@ -101,7 +113,11 @@ class Rook(Piece):
         free=True
         c=1
         while(free):
-            if self.row-c<0 or board[self.row-c][self.col] is not None:
+            if self.row-c<0:
+                free=False
+            elif board[self.row-c][self.col] is not None:
+                if board[self.row-c][self.col].get_color()!=self.get_color():
+                    valid_moves.append((self.row-c, self.col))
                 free=False
             else:
                 valid_moves.append((self.row-c, self.col))
@@ -110,7 +126,11 @@ class Rook(Piece):
         free=True
         c=1
         while(free):
-            if self.col+c>=8 or board[self.row][self.col+c] is not None:
+            if self.col+c>=8:
+                free=False
+            elif board[self.row][self.col+c] is not None:
+                if board[self.row][self.col+c].get_color()!=self.get_color():
+                    valid_moves.append((self.row, self.col+c))
                 free=False
             else:
                 valid_moves.append((self.row, self.col+c))
@@ -119,7 +139,11 @@ class Rook(Piece):
         free=True
         c=1
         while(free):
-            if self.col-c<0 or board[self.row][self.col-c] is not None:
+            if self.col-c<0:
+                free =False
+            elif board[self.row][self.col-c] is not None:
+                if board[self.row][self.col-c].get_color()!=self.get_color():
+                    valid_moves.append((self.row, self.col-c))
                 free=False
             else:
                 valid_moves.append((self.row, self.col-c))
@@ -150,7 +174,11 @@ class Bishop(Piece):
         free=True
         c=1
         while(free):
-            if self.row+c>=8 or self.col+c>=8 or board[self.row+c][self.col+c] is not None:
+            if self.row+c>=8 or self.col+c>=8:
+                free=False
+            elif board[self.row+c][self.col+c] is not None:
+                if board[self.row+c][self.col+c].get_color()!=self.get_color():
+                    valid_moves.append((self.row+c, self.col+c))
                 free=False
             else:
                 valid_moves.append((self.row+c, self.col+c))
@@ -159,7 +187,11 @@ class Bishop(Piece):
         free=True
         c=1
         while(free):
-            if self.row-c<0 or self.col-c<0 or board[self.row-c][self.col-c] is not None:
+            if self.row-c<0 or self.col+c<0:
+                free=False
+            elif board[self.row-c][self.col-c] is not None:
+                if board[self.row-c][self.col-c].get_color()!=self.get_color():
+                    valid_moves.append((self.row-c, self.col-c))
                 free=False
             else:
                 valid_moves.append((self.row-c, self.col-c))
@@ -169,7 +201,11 @@ class Bishop(Piece):
         free=True
         c=1
         while(free):
-            if self.row+c>=8 or self.col-c<0 or board[self.row+c][self.col-c] is not None:
+            if self.row+c>=8 or self.col-c<0 :
+                free=False
+            elif board[self.row+c][self.col-c] is not None:
+                if board[self.row+c][self.col-c].get_color()!=self.get_color():
+                    valid_moves.append((self.row+c, self.col-c))
                 free=False
             else:
                 valid_moves.append((self.row+c, self.col-c))
@@ -178,7 +214,11 @@ class Bishop(Piece):
         free=True
         c=1
         while(free):
-            if self.row-c<0 or self.col+c>=8 or board[self.row-c][self.col+c] is not None:
+            if self.row-c<0 or self.col+c>=8:
+                free=False
+            elif board[self.row-c][self.col+c] is not None:
+                if board[self.row-c][self.col+c].get_color()!=self.get_color():
+                    valid_moves.append((self.row-c, self.col+c))
                 free=False
             else:
                 valid_moves.append((self.row-c, self.col+c))
@@ -212,7 +252,7 @@ class Knight(Piece):
              (self.row-1, self.col+2),(self.row+1, self.col+2)]
         
         for p in pos:
-            if p[0]>=0 and p[0]<8 and p[1]>=0 and p[1]<8 and board[p[0]][p[1]] is None:
+            if (p[0]>=0 and p[0]<8 and p[1]>=0 and p[1]<8) and ((board[p[0]][p[1]] is None) or (board[p[0]][p[1]] is not None and board[p[0]][p[1]].get_color()!=self.get_color())):
                 valid_moves.append((p[0],p[1]))
         return valid_moves
 
@@ -240,7 +280,64 @@ class Queen(Piece):
         free=True
         c=1
         while(free):
-            if self.row+c>=8 or self.col+c>=8 or board[self.row+c][self.col+c] is not None:
+            if self.row+c>=8:
+                free=False
+            elif board[self.row+c][self.col] is not None:
+                if board[self.row+c][self.col].get_color()!=self.get_color():
+                    valid_moves.append((self.row+c, self.col))
+                free=False
+            else:
+                valid_moves.append((self.row+c, self.col))
+            c+=1
+
+        free=True
+        c=1
+        while(free):
+            if self.row-c<0:
+                free=False
+            elif board[self.row-c][self.col] is not None:
+                if board[self.row-c][self.col].get_color()!=self.get_color():
+                    valid_moves.append((self.row-c, self.col))
+                free=False
+            else:
+                valid_moves.append((self.row-c, self.col))
+            c+=1
+
+        free=True
+        c=1
+        while(free):
+            if self.col+c>=8:
+                free=False
+            elif board[self.row][self.col+c] is not None:
+                if board[self.row][self.col+c].get_color()!=self.get_color():
+                    valid_moves.append((self.row, self.col+c))
+                free=False
+            else:
+                valid_moves.append((self.row, self.col+c))
+            c+=1
+
+        free=True
+        c=1
+        while(free):
+            if self.col-c<0:
+                free =False
+            elif board[self.row][self.col-c] is not None:
+                if board[self.row][self.col-c].get_color()!=self.get_color():
+                    valid_moves.append((self.row, self.col-c))
+                free=False
+            else:
+                valid_moves.append((self.row, self.col-c))
+            c+=1
+
+
+        free=True
+        c=1
+        while(free):
+            if self.row+c>=8 or self.col+c>=8:
+                free=False
+            elif board[self.row+c][self.col+c] is not None:
+                if board[self.row+c][self.col+c].get_color()!=self.get_color():
+                    valid_moves.append((self.row+c, self.col+c))
                 free=False
             else:
                 valid_moves.append((self.row+c, self.col+c))
@@ -249,7 +346,11 @@ class Queen(Piece):
         free=True
         c=1
         while(free):
-            if self.row-c<0 or self.col-c<0 or board[self.row-c][self.col-c] is not None:
+            if self.row-c<0 or self.col+c<0:
+                free=False
+            elif board[self.row-c][self.col-c] is not None:
+                if board[self.row-c][self.col-c].get_color()!=self.get_color():
+                    valid_moves.append((self.row-c, self.col-c))
                 free=False
             else:
                 valid_moves.append((self.row-c, self.col-c))
@@ -259,7 +360,11 @@ class Queen(Piece):
         free=True
         c=1
         while(free):
-            if self.row+c>=8 or self.col-c<0 or board[self.row+c][self.col-c] is not None:
+            if self.row+c>=8 or self.col-c<0 :
+                free=False
+            elif board[self.row+c][self.col-c] is not None:
+                if board[self.row+c][self.col-c].get_color()!=self.get_color():
+                    valid_moves.append((self.row+c, self.col-c))
                 free=False
             else:
                 valid_moves.append((self.row+c, self.col-c))
@@ -268,47 +373,17 @@ class Queen(Piece):
         free=True
         c=1
         while(free):
-            if self.row-c<0 or self.col+c>=8 or board[self.row-c][self.col+c] is not None:
+            if self.row-c<0 or self.col+c>=8:
+                free=False
+            elif board[self.row-c][self.col+c] is not None:
+                if board[self.row-c][self.col+c].get_color()!=self.get_color():
+                    valid_moves.append((self.row-c, self.col+c))
                 free=False
             else:
                 valid_moves.append((self.row-c, self.col+c))
             c+=1
 
-        free=True
-        c=1
-        while(free):
-            if self.row+c>=8 or board[self.row+c][self.col] is not None:
-                free=False
-            else:
-                valid_moves.append((self.row+c, self.col))
-            c+=1
 
-        free=True
-        c=1
-        while(free):
-            if self.row-c<0 or board[self.row-c][self.col] is not None:
-                free=False
-            else:
-                valid_moves.append((self.row-c, self.col))
-            c+=1
-
-        free=True
-        c=1
-        while(free):
-            if self.col+c>=8 or board[self.row][self.col+c] is not None:
-                free=False
-            else:
-                valid_moves.append((self.row, self.col+c))
-            c+=1
-
-        free=True
-        c=1
-        while(free):
-            if self.col-c<0 or board[self.row][self.col-c] is not None:
-                free=False
-            else:
-                valid_moves.append((self.row, self.col-c))
-            c+=1
 
         return(valid_moves)
     
@@ -339,7 +414,7 @@ class King(Piece):
              (self.row+1, self.col-1),(self.row+1, self.col),(self.row+1, self.col+1)]
         
         for p in pos:
-            if p[0]>=0 and p[0]<8 and p[1]>=0 and p[1]<8 and board[p[0]][p[1]] is None:
+            if (p[0]>=0 and p[0]<8 and p[1]>=0 and p[1]<8) and ((board[p[0]][p[1]] is None) or (board[p[0]][p[1]] is not None and board[p[0]][p[1]].get_color()!=self.get_color())):
                 valid_moves.append((p[0],p[1]))
         return valid_moves
 

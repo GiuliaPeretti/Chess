@@ -2,6 +2,14 @@ import pygame
 from settings import *
 from pieces import *
 
+#TODO: arrocchi
+#TODO: promozione pedoni
+#TODO: condizione scacco
+#TODO: scacco matto
+#TODO: stallo
+#TODO: tempo
+#
+
 def draw_background():
     screen.fill(BACKGROUND_COLOR)
 
@@ -60,6 +68,19 @@ def move(row, col, selected):
     board[selected[0]][selected[1]].move(row,col,screen)
     board[row][col]=board[selected[0]][selected[1]]
     board[selected[0]][selected[1]]=None
+
+def get_white_king():
+    for row in range(len(board)):
+        for col in range(len(board[row])):
+            if isinstance(board[row][col], King) and board[row][col].get_color()==1:
+                return(row,col)
+
+def get_balck_king():
+    for row in range(len(board)):
+        for col in range(len(board[row])):
+            if isinstance(board[row][col], King) and board[row][col].get_color()==0:
+                return(row,col)
+
 
 
 if __name__=='__main__':
