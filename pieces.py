@@ -54,11 +54,11 @@ class Pawn(Piece):
                 valids.append((self.row+1,self.col-1))
             if(self.row+1<8 and self.col+1<8 and board[self.row+1][self.col+1] is not None and board[self.row+1][self.col+1].get_color()==1):
                 valids.append((self.row+1,self.col+1))
-            if(self.row+1<8 and self.col+1<8 and board[self.row][self.col+1] is not None and isinstance(board[self.row][self.col+1], Pawn) and board[self.row][self.col+1].get_color()==1):
-                valids.append((self.row+1,self.col+1))
-            if(self.row+1<8 and self.col-1>=0 and board[self.row][self.col-1] is not None and isinstance(board[self.row][self.col-1], Pawn) and board[self.row][self.col-1].get_color()==1):
-                valids.append((self.row+1,self.col-1))
-        #TODO: quando c'e en passant il pedone non viene mangiato
+        #     if(self.row+1<8 and self.col+1<8 and board[self.row][self.col+1] is not None and isinstance(board[self.row][self.col+1], Pawn) and board[self.row][self.col+1].get_color()==1):
+        #         valids.append((self.row+1,self.col+1))
+        #     if(self.row+1<8 and self.col-1>=0 and board[self.row][self.col-1] is not None and isinstance(board[self.row][self.col-1], Pawn) and board[self.row][self.col-1].get_color()==1):
+        #         valids.append((self.row+1,self.col-1))
+        # #TODO: quando c'e en passant il pedone non viene mangiato
         else:
             if(self.row-1>=0 and board[self.row-1][self.col] is None):
                 valids.append((self.row-1,self.col))
@@ -68,10 +68,10 @@ class Pawn(Piece):
                 valids.append((self.row-1,self.col-1))
             if(self.row-1>=0 and self.col+1<8 and board[self.row-1][self.col+1] is not None and board[self.row-1][self.col+1].get_color()==0):
                 valids.append((self.row-1,self.col+1)) 
-            if(self.row-1>=0 and self.col+1<8 and board[self.row][self.col+1] is not None and isinstance(board[self.row][self.col+1], Pawn) and board[self.row][self.col+1].get_color()==0):
-                valids.append((self.row-1,self.col+1))
-            if(self.row-1>=0 and self.col-1>=0 and board[self.row][self.col-1] is not None and isinstance(board[self.row][self.col-1], Pawn) and board[self.row][self.col-1].get_color()==0):
-                valids.append((self.row-1,self.col-1))
+            # if(self.row-1>=0 and self.col+1<8 and board[self.row][self.col+1] is not None and isinstance(board[self.row][self.col+1], Pawn) and board[self.row][self.col+1].get_color()==0):
+            #     valids.append((self.row-1,self.col+1))
+            # if(self.row-1>=0 and self.col-1>=0 and board[self.row][self.col-1] is not None and isinstance(board[self.row][self.col-1], Pawn) and board[self.row][self.col-1].get_color()==0):
+            #     valids.append((self.row-1,self.col-1))
         return(valids)
 
 

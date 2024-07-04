@@ -3,12 +3,11 @@ from settings import *
 from pieces import *
 
 #TODO: arrocchi
-#TODO: promozione pedoni
 #TODO: condizione scacco
 #TODO: scacco matto
 #TODO: stallo
 #TODO: tempo
-#
+
 
 def draw_background():
     screen.fill(BACKGROUND_COLOR)
@@ -85,6 +84,11 @@ def move(row, col, selected):
     board[selected[0]][selected[1]].move(row,col,screen)
     board[row][col]=board[selected[0]][selected[1]]
     board[selected[0]][selected[1]]=None
+    if isinstance(board[row][col], Pawn) and board[row][col].get_color()==1 and row==0:
+        board[row][col]=Queen(row,col,1)
+    elif isinstance(board[row][col], Pawn) and board[row][col].get_color()==0 and row==7:
+        board[row][col]=Queen(row,col,0)    
+
     if player==0:
         player=1
     else:
