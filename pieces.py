@@ -24,14 +24,14 @@ class Piece:
             pygame.draw.rect(win, color, (v[1]*CELL_SIZE+SCREEN_BORDER, v[0]*CELL_SIZE+SCREEN_BORDER, CELL_SIZE, CELL_SIZE ))
 
     def set_pos(self, row, col):
-        print('set in piece')
+        # print('set in piece')
 
         self.row=row
         self.col=col
 
     def move(self, row, col, win, path):
         self.first_move=True
-        print('move in piece')
+        # print('move in piece')
 
         self.set_pos(row, col)
         self.draw(win)
@@ -52,28 +52,26 @@ class Pawn(Piece):
                 valids.append((self.row+2,self.col))  
             if(self.row+1<8 and self.col-1>=0 and board[self.row+1][self.col-1] is not None and board[self.row+1][self.col-1].get_color()==1):
                 valids.append((self.row+1,self.col-1))
-            if(self.row+1<8 and self.col+8<8 and board[self.row+1][self.col+1] is not None and board[self.row+1][self.col+1].get_color()==1):
+            if(self.row+1<8 and self.col+1<8 and board[self.row+1][self.col+1] is not None and board[self.row+1][self.col+1].get_color()==1):
                 valids.append((self.row+1,self.col+1))
-            if(self.row+1<8 and self.col+1<8 and board[self.row][self.col+1] is not None and board[self.row][self.col+1].get_color()==1):
+            if(self.row+1<8 and self.col+1<8 and board[self.row][self.col+1] is not None and isinstance(board[self.row][self.col+1], Pawn) and board[self.row][self.col+1].get_color()==1):
                 valids.append((self.row+1,self.col+1))
-            if(self.row+1<8 and self.col-1>=0 and board[self.row][self.col-1] is not None and board[self.row][self.col-1].get_color()==1):
+            if(self.row+1<8 and self.col-1>=0 and board[self.row][self.col-1] is not None and isinstance(board[self.row][self.col-1], Pawn) and board[self.row][self.col-1].get_color()==1):
                 valids.append((self.row+1,self.col-1))
-        #TODO: add en passant
+        #TODO: quando c'e en passant il pedone non viene mangiato
         else:
             if(self.row-1>=0 and board[self.row-1][self.col] is None):
                 valids.append((self.row-1,self.col))
             if(self.row-2>=0 and board[self.row-2][self.col] is None and not(self.first_move)):
                 valids.append((self.row-2,self.col)) 
-            if(self.row+1>=0 and self.col-1>=0 and board[self.row-1][self.col-1] is not None and board[self.row-1][self.col-1].get_color()==0):
+            if(self.row-1>=0 and self.col-1>=0 and board[self.row-1][self.col-1] is not None and board[self.row-1][self.col-1].get_color()==0):
                 valids.append((self.row-1,self.col-1))
-            if(self.row+1>=0 and self.col+1<8 and board[self.row-1][self.col+1] is not None and board[self.row-1][self.col+1].get_color()==0):
+            if(self.row-1>=0 and self.col+1<8 and board[self.row-1][self.col+1] is not None and board[self.row-1][self.col+1].get_color()==0):
                 valids.append((self.row-1,self.col+1)) 
-            if(self.row-1>=0 and self.col+1<8 and board[self.row][self.col+1] is not None and board[self.row][self.col+1].get_color()==0):
+            if(self.row-1>=0 and self.col+1<8 and board[self.row][self.col+1] is not None and isinstance(board[self.row][self.col+1], Pawn) and board[self.row][self.col+1].get_color()==0):
                 valids.append((self.row-1,self.col+1))
-            if(self.row-1>=0 and self.col-1>=0 and board[self.row][self.col-1] is not None and board[self.row][self.col-1].get_color()==0):
+            if(self.row-1>=0 and self.col-1>=0 and board[self.row][self.col-1] is not None and isinstance(board[self.row][self.col-1], Pawn) and board[self.row][self.col-1].get_color()==0):
                 valids.append((self.row-1,self.col-1))
-
-
         return(valids)
 
 
@@ -161,7 +159,7 @@ class Rook(Piece):
         return path
 
     def move(self, row, col, win):
-        print('move in rook')
+        # print('move in rook')
         super().move(row, col, win, self.get_path())
 
 

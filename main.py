@@ -39,23 +39,39 @@ def gen_board():
 
 def handle_mouse_input(x,y):
     global selected
+    global player
     row=(y-SCREEN_BORDER)//CELL_SIZE
     col=(x-SCREEN_BORDER)//CELL_SIZE
     if selected is None:
         draw_chessboard()
         draw_board()
-        if board[row][col] is not None:
+        if board[row][col] is not None and board[row][col].get_color()==player:
             valids=board[row][col].valid_moves(board)
             board[row][col].draw_valid(screen,valids)
-        selected=(row,col)
-        draw_board()
+            selected=(row,col)
+            draw_board()
     else:
         valids=board[selected[0]][selected[1]].valid_moves(board)
+        text=''
+        if board[row][col] is not None and (row,col)==get_balck_king():
+            print("Bianco vince")
+            text='White wins'
+        elif board[row][col] is not None and (row,col)==get_white_king():
+            print("Nero vince")
+            text='Black wins'
         if (row,col) in valids:
             move(row, col, selected)
         selected=None
         draw_chessboard()
         draw_board()
+
+        if text!='':
+            draw_background()
+            font = pygame.font.SysFont('arial', 80)
+            text=font.render(text, True, LIGHT_PINK)
+            screen.blit(text, (SCREEN_WIDTH//2-text.get_width()//2,SCREEN_HEIGHT//2-text.get_height()//2))
+            global game_end
+            game_end=True
 
 
 def draw_board():
@@ -65,9 +81,14 @@ def draw_board():
                 cell.draw(screen)
 
 def move(row, col, selected):
+    global player
     board[selected[0]][selected[1]].move(row,col,screen)
     board[row][col]=board[selected[0]][selected[1]]
     board[selected[0]][selected[1]]=None
+    if player==0:
+        player=1
+    else:
+        player=0
 
 def get_white_king():
     for row in range(len(board)):
@@ -81,6 +102,16 @@ def get_balck_king():
             if isinstance(board[row][col], King) and board[row][col].get_color()==0:
                 return(row,col)
 
+def restart():
+    global board
+    global selected
+    global player
+    draw_background()
+    draw_chessboard()
+    board=gen_board()
+    draw_board()
+    selected=None
+    player=1
 
 
 if __name__=='__main__':
@@ -93,8 +124,8 @@ if __name__=='__main__':
 
 
     selected=None
-
-
+    player=1
+    game_end=False
     draw_background()
     draw_chessboard()
     board=gen_board()
@@ -107,8 +138,12 @@ if __name__=='__main__':
                 run = False
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
-                x,y=pygame.mouse.get_pos()
-                handle_mouse_input(x, y)
+                if game_end==True:
+                    game_end=False
+                    restart()
+                else:
+                    x,y=pygame.mouse.get_pos()
+                    handle_mouse_input(x, y)
         pygame.display.flip()
         clock.tick(FPS)
 
